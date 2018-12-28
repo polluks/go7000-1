@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -245,6 +246,28 @@ func main() {
 		fmt.Print(strings.ToLower(mnemonic))
 		fmt.Println(data)
 	}
+
+	for index := 0; index <= len(mnemonicsMatrix)-1; index++ {
+		fmt.Printf("{\"op\":\"%02x\", \"mn\":\"%s\", \"ol\":%d},\n", index, mnemonicsMatrix[index], opCodeLength[index])
+	}
+
+	type opCodesMatrix struct {
+		Op string // OpCode
+		Mn string // Mnemonic
+		Ol int    // OpCodeLength
+	}
+	birdJson := `[
+				{"op":"00", "mn":"SEL MB1", "ol":1},
+				{"op":"01", "mn":"MOV A,R7", "ol":1},
+				{"op":"fd", "mn":"MOV A,R5", "ol":0},
+				{"op":"fe", "mn":"MOV A,R6", "ol":0},
+				{"op":"ff", "mn":"MOV A,R7", "ol":0}
+				]`
+	var opCodes []opCodesMatrix
+	json.Unmarshal([]byte(birdJson), &opCodes)
+	fmt.Printf("OpCodeMatrix : %+v\n", opCodes)
+	myOpCode := opCodes[1]
+	fmt.Println(myOpCode.Op, myOpCode.Mn, myOpCode.Ol)
 }
 
 func readInputFile() []byte {
